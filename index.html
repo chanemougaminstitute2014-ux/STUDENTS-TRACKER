@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IndividEdu | Personalised Learning</title>
+<style>
+  :root {
+    --blue:#1557b0; --blue-dark:#123d7a; --green:#17a878;
+    --ink:#172554; --muted:#64748b; --line:#dbe4f0;
+    --bg:#f3f6fc; --white:#fff; --danger:#b91c1c;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    color:var(--ink); background:linear-gradient(135deg,#eef5ff,#f7fbff 55%,#eaf8f2);
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 14px;
+  }
+  .shell { width:100%; max-width:760px; }
+  .brand { display:flex; align-items:center; gap:13px; margin:0 0 18px 4px; }
+  .brand-icon { width:54px;height:54px;border-radius:16px;background:var(--blue);color:white;display:grid;place-items:center;font-size:28px;box-shadow:0 8px 20px #1557b033; }
+  .brand h1 { margin:0; font-size:26px; letter-spacing:-.6px; color:var(--blue); }
+  .brand p { margin:4px 0 0;color:var(--muted);font-size:13px; }
+  .card { background:var(--white); border:1px solid #e5ebf4; border-radius:22px; padding:clamp(20px,4vw,34px); box-shadow:0 18px 55px #183b6812; }
+  h2 { font-size:clamp(23px,4vw,30px); margin:0 0 7px; letter-spacing:-.7px; }
+  .sub { margin:0 0 22px; color:var(--muted); font-size:14px; line-height:1.5; }
+  .role-tabs,.mode-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; background:#f1f5f9; padding:5px; border-radius:13px; margin-bottom:18px; }
+  .mode-tabs { grid-template-columns:repeat(2,1fr); }
+  button { font:inherit; cursor:pointer; border:0; }
+  .tab { border-radius:9px; padding:12px 8px; color:#64748b; background:transparent; font-weight:650; font-size:14px; }
+  .tab.active { color:var(--blue); background:white; box-shadow:0 1px 5px #0f172a12; }
+  .section-title { font-size:15px; color:var(--blue); margin:8px 0 12px; font-weight:750; }
+  .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
+  .field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .field.full { grid-column:1/-1; }
+  label { font-size:13px; font-weight:650; color:#334155; }
+  input,select { width:100%; border:1px solid #cbd5e1; border-radius:10px; padding:12px 13px; font:inherit; font-size:14px; color:#0f172a; background:white; outline:none; }
+  input:focus,select:focus { border-color:var(--blue); box-shadow:0 0 0 3px #1557b018; }
+  input::placeholder { color:#94a3b8; }
+  .primary { display:block; width:100%; background:var(--blue); color:white; border-radius:11px; padding:13px 16px; margin-top:21px; font-weight:750; transition:.15s; }
+  .primary:hover { background:var(--blue-dark); }
+  .helper { color:var(--muted); font-size:12px; line-height:1.5; margin:12px 0 0; }
+  .message { display:none; border-radius:10px; padding:12px 14px; font-size:13px; line-height:1.5; margin-top:15px; }
+  .message.show { display:block; }
+  .message.info { background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; }
+  .message.error { background:#fef2f2; color:var(--danger); border:1px solid #fecaca; }
+  .password-row { display:flex; gap:8px; }
+  .password-row input { flex:1; min-width:0; }
+  .show-pass { border:1px solid var(--line); background:#f8fafc; border-radius:10px; padding:0 12px; color:#334155; font-size:12px; }
+  .footer { text-align:center; color:var(--muted); font-size:12px; margin:16px 0 0; }
+  .hidden { display:none !important; }
+  hr { border:0; border-top:1px solid #e5eaf2; margin:22px 0; }
+  @media(max-width:560px) {
+    body { padding:16px 10px; align-items:flex-start; }
+    .form-grid { grid-template-columns:1fr; gap:13px; }
+    .field.full { grid-column:auto; }
+    .tab { font-size:12px; padding:11px 4px; }
+    .brand h1 { font-size:24px; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="brand">
+    <div class="brand-icon" aria-hidden="true">🎓</div>
+    <div><h1>IndividEdu</h1><p>Personalised learning. Individual growth.</p></div>
+  </header>
+
+  <section class="card">
+    <h2 id="heading">Welcome back!</h2>
+    <p class="sub" id="subheading">Sign in to continue your learning journey.</p>
+
+    <div class="role-tabs" role="tablist" aria-label="Choose account type">
+      <button class="tab" data-role="Admin" type="button">🛡 Admin</button>
+      <button class="tab active" data-role="Student" type="button">🎓 Student</button>
+      <button class="tab" data-role="Teacher" type="button">📘 Teacher</button>
+    </div>
+
+    <div id="modeTabs" class="mode-tabs">
+      <button class="tab active" data-mode="login" type="button">Login</button>
+      <button class="tab" data-mode="signup" type="button">Sign up</button>
+    </div>
+
+    <form id="authForm">
+      <div id="loginFields">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="loginId">Username or registered contact number *</label>
+            <input id="loginId" name="loginId" autocomplete="username" placeholder="Enter username or contact number" required>
+          </div>
+          <div class="field full">
+            <label for="loginPassword">Password *</label>
+            <div class="password-row">
+              <input id="loginPassword" name="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
+              <button class="show-pass" id="togglePassword" type="button">Show</button>
+            </div>
+          </div>
+        </div>
+        <p class="helper" id="loginHelper">Use the account details provided by your institute.</p>
+        <button class="primary" type="submit" id="loginButton">Login as Student</button>
+      </div>
+
+      <div id="studentFields" class="hidden">
+        <div class="section-title">Student details</div>
+        <div class="form-grid">
+          <div class="field full"><label for="studentName">Student name *</label><input id="studentName" name="studentName" autocomplete="name" required placeholder="Full name of student"></div>
+          <div class="field"><label for="studentClass">Class *</label>
+            <select id="studentClass" name="studentClass" required>
+              <option value="">Select class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option>
+            </select>
+          </div>
+          <div class="field"><label for="studentSubjects">Subjects *</label><input id="studentSubjects" name="studentSubjects" required placeholder="e.g. Maths, Science"></div>
+          <div class="field full"><label for="studentSchool">School *</label><input id="studentSchool" name="studentSchool" required placeholder="School name"></div>
+        </div>
+        <hr>
+        <div class="section-title">Father's details</div>
+        <div class="form-grid">
+          <div class="field full"><label for="fatherName">Father's name *</label><input id="fatherName" name="fatherName" required placeholder="Full name"></div>
+          <div class="field"><label for="fatherOccupation">Occupation *</label><input id="fatherOccupation" name="fatherOccupation" required placeholder="Occupation"></div>
+          <div class="field"><label for="fatherContact">Contact number *</label><input id="fatherContact" name="fatherContact" type="tel" inputmode="tel" pattern="[0-9+() -]{7,20}" required placeholder="Mobile number"></div>
+        </div>
+        <hr>
+        <div class="section-title">Mother's details</div>
+        <div class="form-grid">
+          <div class="field full"><label for="motherName">Mother's name *</label><input id="motherName" name="motherName" required placeholder="Full name"></div>
+          <div class="field"><label for="motherOccupation">Occupation *</label><input id="motherOccupation" name="motherOccupation" required placeholder="Occupation"></div>
+          <div class="field"><label for="motherContact">Contact number *</label><input id="motherContact" name="motherContact" type="tel" inputmode="tel" pattern="[0-9+() -]{7,20}" required placeholder="Mobile number"></div>
+        </div>
+        <button class="primary" type="submit">Submit student registration</button>
+        <p class="helper">A secure backend is required to save this information and create a student login.</p>
+      </div>
+
+      <div id="teacherFields" class="hidden">
+        <div class="section-title">Teacher details</div>
+        <div class="form-grid">
+          <div class="field full"><label for="teacherName">Teacher name *</label><input id="teacherName" name="teacherName" autocomplete="name" required placeholder="Full name"></div>
+          <div class="field full"><label for="teacherSchool">School *</label><input id="teacherSchool" name="teacherSchool" required placeholder="Current or most recent school"></div>
+          <div class="field full"><label for="teacherSubject">Subject(s) handled *</label><input id="teacherSubject" name="teacherSubject" required placeholder="e.g. Physics, Mathematics"></div>
+          <div class="field"><label for="teacherExperience">Previous teaching experience (years) *</label><input id="teacherExperience" name="teacherExperience" type="number" min="0" max="60" step="0.5" required placeholder="e.g. 5"></div>
+          <div class="field"><label for="teacherContact">Contact number *</label><input id="teacherContact" name="teacherContact" type="tel" inputmode="tel" pattern="[0-9+() -]{7,20}" required placeholder="Mobile number"></div>
+        </div>
+        <button class="primary" type="submit">Submit teacher registration</button>
+        <p class="helper">A secure backend is required to save this information and create a teacher login.</p>
+      </div>
+    </form>
+
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+  </section>
+  <p class="footer">IndividEdu · Learn individually. Improve continuously.</p>
+</main>
+
+<script>
+(() => {
+  let role = "Student";
+  let mode = "login";
+  const $ = (id) => document.getElementById(id);
+  const roleTabs = [...document.querySelectorAll("[data-role]")];
+  const modeTabs = [...document.querySelectorAll("[data-mode]")];
+
+  function showMessage(text, type = "info") {
+    const box = $("message");
+    box.textContent = text;
+    box.className = "message show " + type;
+  }
+  function clearMessage() {
+    $("message").textContent = "";
+    $("message").className = "message";
+  }
+  function updateView() {
+    roleTabs.forEach(b => b.classList.toggle("active", b.dataset.role === role));
+    $("modeTabs").classList.toggle("hidden", role === "Admin");
+    if (role === "Admin") mode = "login";
+    modeTabs.forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
+
+    $("heading").textContent = mode === "login" ? "Welcome back!" : "Create your account";
+    $("subheading").textContent = mode === "login"
+      ? "Sign in to continue your learning journey."
+      : "Complete the form to register with IndividEdu.";
+    $("loginFields").classList.toggle("hidden", mode !== "login");
+    $("studentFields").classList.toggle("hidden", !(mode === "signup" && role === "Student"));
+    $("teacherFields").classList.toggle("hidden", !(mode === "signup" && role === "Teacher"));
+    $("loginButton").textContent = "Login as " + role;
+    $("loginHelper").textContent = role === "Admin"
+      ? "Administrator accounts must be created securely by the system owner."
+      : "Use the account details provided by your institute.";
+
+    // Only visible inputs participate in browser validation.
+    [...$("authForm").querySelectorAll("input,select")].forEach(el => {
+      const parent = el.closest(".hidden");
+      el.disabled = !!parent;
+    });
+    clearMessage();
+  }
+
+  roleTabs.forEach(button => button.addEventListener("click", () => {
+    role = button.dataset.role;
+    mode = "login";
+    updateView();
+  }));
+  modeTabs.forEach(button => button.addEventListener("click", () => {
+    mode = button.dataset.mode;
+    updateView();
+  }));
+  $("togglePassword").addEventListener("click", () => {
+    const field = $("loginPassword");
+    const isPassword = field.type === "password";
+    field.type = isPassword ? "text" : "password";
+    $("togglePassword").textContent = isPassword ? "Hide" : "Show";
+  });
+
+  $("authForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const activeFields = role === "Student" && mode === "signup" ? $("studentFields")
+      : role === "Teacher" && mode === "signup" ? $("teacherFields")
+      : $("loginFields");
+    const requiredFields = [...activeFields.querySelectorAll("input[required],select[required]")];
+    for (const field of requiredFields) {
+      if (!field.checkValidity()) {
+        field.reportValidity();
+        return;
+      }
+    }
+    if (mode === "signup") {
+      showMessage(
+        role + " registration form is valid. This prototype does not transmit or save information. Connect a secure backend/database to complete registration.",
+        "info"
+      );
+    } else {
+      showMessage(
+        "Login interface is ready, but authentication is not connected yet. Add a secure authentication backend before using real accounts.",
+        "info"
+      );
+    }
+  });
+
+  updateView();
+})();
+</script>
+</body>
+</html>
